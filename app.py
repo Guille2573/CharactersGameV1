@@ -1,5 +1,6 @@
-import eventlet
-eventlet.monkey_patch()
+# No es necesario importar y parchear eventlet aquí, Gunicorn se encarga.
+# import eventlet
+# eventlet.monkey_patch()
 
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
@@ -7,8 +8,8 @@ from game import Game
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-# **CAMBIO CRÍTICO**: Vuelve a añadir async_mode='eventlet'
-# Esto es necesario para que SocketIO se sincronice con el worker de Gunicorn.
+
+# Dejamos async_mode='eventlet' para que Flask-SocketIO sepa qué esperar.
 socketio = SocketIO(app, async_mode='eventlet')
 
 game = Game(socketio)
@@ -29,8 +30,6 @@ def on_join(data):
 @socketio.on('start_game')
 def on_start():
     game.handle_start()
-    # No es necesario emitir 'players_update' aquí, ya que el estado
-    # de los jugadores no cambia al empezar, solo el del juego.
 
 @socketio.on('make_accusation')
 def on_accuse(data):
@@ -45,6 +44,7 @@ def on_private_msg(data):
     game.handle_private_message(data)
 
 
-# Este bloque se ignora en Render, pero es útil para pruebas locales.
 if __name__ == '__main__':
+    # Para pruebas locales, eventlet debe estar instalado
+    # y este comando usará el servidor de desarrollo de Flask
     socketio.run(app, debug=True)
