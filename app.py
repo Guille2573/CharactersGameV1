@@ -7,8 +7,9 @@ from game import Game
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-# **CAMBIO**: Se elimina async_mode='eventlet' para que funcione en local y en Render
-socketio = SocketIO(app)
+# **CAMBIO CRÍTICO**: Vuelve a añadir async_mode='eventlet'
+# Esto es necesario para que SocketIO se sincronice con el worker de Gunicorn.
+socketio = SocketIO(app, async_mode='eventlet')
 
 game = Game(socketio)
 
@@ -28,7 +29,8 @@ def on_join(data):
 @socketio.on('start_game')
 def on_start():
     game.handle_start()
-    socketio.emit('players_update', game.get_players_info())
+    # No es necesario emitir 'players_update' aquí, ya que el estado
+    # de los jugadores no cambia al empezar, solo el del juego.
 
 @socketio.on('make_accusation')
 def on_accuse(data):
@@ -43,5 +45,6 @@ def on_private_msg(data):
     game.handle_private_message(data)
 
 
+# Este bloque se ignora en Render, pero es útil para pruebas locales.
 if __name__ == '__main__':
     socketio.run(app, debug=True)

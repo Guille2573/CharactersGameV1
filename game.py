@@ -1,4 +1,4 @@
-# app/game.py (Corregido)
+# game.py
 
 import random
 from flask import request
@@ -12,7 +12,7 @@ class Game:
         self.teams = {}
         self.last_accusation = "No hay acusaciones aún."
 
-    # ... (handle_join, get_players_info, handle_start, notify_turn sin cambios) ...
+    # ... (handle_join, get_players_info, handle_start, notify_turn, handle_accusation sin cambios)...
     def handle_join(self, data, sid):
         name = data.get('name', '').strip()
         character = data.get('character', '').strip()
@@ -133,20 +133,24 @@ class Game:
 
         self.socketio.start_background_task(reveal_result)
 
-    # ... (resto de funciones sin cambios) ...
     def next_turn(self):
         alive_players_indices = [i for i, p in enumerate(self.players) if not self.is_player_caught(p['name'])]
         if len(alive_players_indices) <= 1:
             self.socketio.emit('general_message', {'sender': 'Sistema', 'msg': 'Game over!'})
             return
         
+        # Lógica mejorada para encontrar el siguiente turno
         try:
-            current_player_list_index = alive_players_indices.index(self.turn_index)
-            next_player_list_index = (current_player_list_index + 1) % len(alive_players_indices)
-            self.turn_index = alive_players_indices[next_player_list_index]
+            # Encuentra la posición del jugador actual en la lista de jugadores vivos
+            current_list_index = alive_players_indices.index(self.turn_index)
+            # Pasa al siguiente en la lista, volviendo al principio si es el último
+            next_list_index = (current_list_index + 1) % len(alive_players_indices)
+            # El nuevo índice de turno es el que corresponde en la lista original de jugadores
+            self.turn_index = alive_players_indices[next_list_index]
         except ValueError:
-            # Si el jugador actual ya no está vivo (caso raro), se elige uno al azar
-            self.turn_index = random.choice(alive_players_indices)
+            # Si el jugador actual ya no está en la lista de vivos (un caso raro),
+            # simplemente se elige el primer jugador vivo de la lista.
+            self.turn_index = alive_players_indices[0]
 
         self.notify_turn()
 
