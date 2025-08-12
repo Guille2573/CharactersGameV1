@@ -7,8 +7,8 @@ from game import Game
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-# **CAMBIO IMPORTANTE**: Añade async_mode='eventlet'
-socketio = SocketIO(app, async_mode='eventlet')
+# **CAMBIO**: Se elimina async_mode='eventlet' para que funcione en local y en Render
+socketio = SocketIO(app)
 
 game = Game(socketio)
 
