@@ -1,4 +1,5 @@
-# app/app.py (No se necesitan cambios, está listo para producción)
+import eventlet
+eventlet.monkey_patch()
 
 from flask import Flask, render_template, request
 from flask_socketio import SocketIO, emit
@@ -6,13 +7,16 @@ from game import Game
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
-socketio = SocketIO(app)
+# **CAMBIO IMPORTANTE**: Añade async_mode='eventlet'
+socketio = SocketIO(app, async_mode='eventlet')
 
 game = Game(socketio)
 
 @app.route('/')
 def index():
     return render_template('index.html')
+
+# --- El resto de tus rutas y manejadores de eventos no cambian ---
 
 @socketio.on('join_game')
 def on_join(data):
@@ -37,6 +41,7 @@ def on_general_msg(data):
 @socketio.on('send_private_message')
 def on_private_msg(data):
     game.handle_private_message(data)
+
 
 if __name__ == '__main__':
     socketio.run(app, debug=True)
