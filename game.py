@@ -184,30 +184,13 @@ class Game:
 
                 self.turn_index = self.find_player_index(accused_name)
                 self.notify_turn()
+
             else:
-                self.next_turn()
+                self.socketio.sleep(2)
+                self.turn_index = self.find_player_index(accused_name)
+                self.notify_turn()
 
         self.socketio.start_background_task(reveal_result)
-
-    def next_turn(self):
-        alive_players_indices = [i for i, p in enumerate(self.players) if not self.is_player_caught(p['name'])]
-        if len(alive_players_indices) <= 1:
-            # This logic might now be redundant due to the new game over condition
-            # but is kept as a fallback.
-            leader_name = self.players[alive_players_indices[0]]['name']
-            self.socketio.emit('game_over', {'winner': leader_name})
-            self.socketio.sleep(5)
-            self.reset()
-            return
-        
-        try:
-            current_list_index = alive_players_indices.index(self.turn_index)
-            next_list_index = (current_list_index + 1) % len(alive_players_indices)
-            self.turn_index = alive_players_indices[next_list_index]
-        except ValueError:
-            self.turn_index = alive_players_indices[0]
-
-        self.notify_turn()
 
     def is_player_caught(self, name):
         player = self.find_player(name)
