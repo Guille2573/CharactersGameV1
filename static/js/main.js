@@ -104,6 +104,7 @@ socket.on('turn_info', data => {
     }
 });
 
+<<<<<<< HEAD
 // **CAMBIO**: El evento ahora recibe un objeto con 'members' y 'leader_character'
 socket.on('update_team', teamInfo => {
     myTeam = teamInfo.members;
@@ -111,6 +112,13 @@ socket.on('update_team', teamInfo => {
     updateAccusedDropdown(); // Actualizar el desplegable al cambiar de equipo
     
     // **CAMBIO**: Lógica para el mensaje fijado
+=======
+socket.on('update_team', teamInfo => {
+    myTeam = teamInfo.members;
+    updateGroupPlayers();
+    updateAccusedDropdown(); 
+    
+>>>>>>> cc1b273 (cambios hechos en el tren)
     const leaderName = myTeam[0];
     pinnedMessageDiv.textContent = `El personaje de ${leaderName} es ${teamInfo.leader_character}`;
     pinnedMessageDiv.style.display = 'block';
@@ -136,7 +144,20 @@ socket.on('private_message', data => {
     }
 });
 
+<<<<<<< HEAD
 // ... (Listeners de UI sin cambios) ...
+=======
+socket.on('game_over', data => {
+    alert(`¡Juego terminado! El ganador es ${data.winner}`);
+    window.location.reload();
+});
+
+socket.on('force_reload', () => {
+    window.location.reload();
+});
+
+
+>>>>>>> cc1b273 (cambios hechos en el tren)
 // LISTENERS DE UI
 btnJoin.onclick = () => {
     const name = inputName.value.trim();
@@ -200,7 +221,10 @@ window.onblur = () => windowFocused = false;
 
 
 // FUNCIONES AUXILIARES
+<<<<<<< HEAD
 // ... (addMessageToChat, switchTab, updateBadges, updatePlayersList, updatePlayersListJoin sin cambios)...
+=======
+>>>>>>> cc1b273 (cambios hechos en el tren)
 function addMessageToChat(chatDiv, sender, message) {
     const messageElement = document.createElement('div');
     messageElement.style.marginBottom = "10px";
@@ -277,7 +301,10 @@ function updateGroupPlayers() {
         if (name === leader) {
             li.style.fontWeight = 'bold';
             li.style.color = 'gold';
+<<<<<<< HEAD
             // **CAMBIO**: Estrella a la derecha del nombre
+=======
+>>>>>>> cc1b273 (cambios hechos en el tren)
             li.innerHTML = `${name} (Líder) &#9733;`;
         } else if (name === myName) {
             li.style.fontWeight = 'bold';
@@ -289,7 +316,10 @@ function updateGroupPlayers() {
     });
 }
 
+<<<<<<< HEAD
 // **CAMBIO**: La función ahora filtra a los miembros del equipo (`myTeam`)
+=======
+>>>>>>> cc1b273 (cambios hechos en el tren)
 function updateAccusedDropdown() {
     accusedSelect.innerHTML = '';
     playersList
