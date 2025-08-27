@@ -12,9 +12,6 @@ class Game:
         self.teams = {}
         self.last_accusation = "No hay acusaciones aún."
 
-<<<<<<< HEAD
-    # ... (handle_join, get_players_info, handle_start, notify_turn, handle_accusation sin cambios)...
-=======
     def levenshtein_distance(self, s1, s2):
         if len(s1) < len(s2):
             return self.levenshtein_distance(s2, s1)
@@ -57,7 +54,6 @@ class Game:
         self.socketio.emit('force_reload')
 
 
->>>>>>> cc1b273 (cambios hechos en el tren)
     def handle_join(self, data, sid):
         name = data.get('name', '').strip()
         character = data.get('character', '').strip()
@@ -98,11 +94,8 @@ class Game:
 
             players_copy = self.players[:]
             random.shuffle(players_copy)
-<<<<<<< HEAD
-=======
             
             # First round of characters
->>>>>>> cc1b273 (cambios hechos en el tren)
             for p in players_copy:
                 self.socketio.emit('presentation_message', p['character'])
                 self.socketio.sleep(4)
@@ -116,8 +109,6 @@ class Game:
             for msg, delay in final_messages:
                 self.socketio.emit('presentation_message', msg)
                 self.socketio.sleep(delay)
-<<<<<<< HEAD
-=======
             
             # Second round of characters
             for p in players_copy:
@@ -126,7 +117,6 @@ class Game:
 
             self.socketio.emit('presentation_message', None)
 
->>>>>>> cc1b273 (cambios hechos en el tren)
 
             alive_players = [i for i, p in enumerate(self.players) if p['team_id'] == p['name']]
             self.turn_index = random.choice(alive_players) if alive_players else 0
@@ -159,11 +149,7 @@ class Game:
         
         def reveal_result():
             self.socketio.sleep(2)
-<<<<<<< HEAD
-            correct = guess.lower() == accused_player['character'].lower()
-=======
             correct = self.are_strings_similar(guess, accused_player['character'])
->>>>>>> cc1b273 (cambios hechos en el tren)
             result_text = "CORRECTO" if correct else "falso"
             
             self.last_accusation = f"{accusation_text}\ny es....\n{result_text}"
@@ -175,10 +161,6 @@ class Game:
                 self.teams[leader_name].append(accused_name)
                 accused_player['team_id'] = leader_name
                 
-<<<<<<< HEAD
-                # **CAMBIO**: Se añade el personaje del líder a la información del equipo
-=======
->>>>>>> cc1b273 (cambios hechos en el tren)
                 team_info = {
                     'members': self.teams[leader_name],
                     'leader_character': leader_player['character']
@@ -193,9 +175,6 @@ class Game:
                     player = self.find_player(p_name)
                     if player:
                         self.socketio.emit('update_team', team_info, room=player['sid'])
-<<<<<<< HEAD
-                
-=======
 
                 if len(self.teams[leader_name]) == len(self.players):
                     self.socketio.emit('game_over', {'winner': leader_name})
@@ -203,7 +182,6 @@ class Game:
                     self.reset()
                     return
 
->>>>>>> cc1b273 (cambios hechos en el tren)
                 self.turn_index = self.find_player_index(accused_name)
                 self.notify_turn()
             else:
@@ -214,22 +192,6 @@ class Game:
     def next_turn(self):
         alive_players_indices = [i for i, p in enumerate(self.players) if not self.is_player_caught(p['name'])]
         if len(alive_players_indices) <= 1:
-<<<<<<< HEAD
-            self.socketio.emit('general_message', {'sender': 'Sistema', 'msg': 'Game over!'})
-            return
-        
-        # Lógica mejorada para encontrar el siguiente turno
-        try:
-            # Encuentra la posición del jugador actual en la lista de jugadores vivos
-            current_list_index = alive_players_indices.index(self.turn_index)
-            # Pasa al siguiente en la lista, volviendo al principio si es el último
-            next_list_index = (current_list_index + 1) % len(alive_players_indices)
-            # El nuevo índice de turno es el que corresponde en la lista original de jugadores
-            self.turn_index = alive_players_indices[next_list_index]
-        except ValueError:
-            # Si el jugador actual ya no está en la lista de vivos (un caso raro),
-            # simplemente se elige el primer jugador vivo de la lista.
-=======
             # This logic might now be redundant due to the new game over condition
             # but is kept as a fallback.
             leader_name = self.players[alive_players_indices[0]]['name']
@@ -243,7 +205,6 @@ class Game:
             next_list_index = (current_list_index + 1) % len(alive_players_indices)
             self.turn_index = alive_players_indices[next_list_index]
         except ValueError:
->>>>>>> cc1b273 (cambios hechos en el tren)
             self.turn_index = alive_players_indices[0]
 
         self.notify_turn()
